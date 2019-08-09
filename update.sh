@@ -2,55 +2,32 @@
 set -Eeuo pipefail
 
 # see https://www.redmine.org/projects/redmine/wiki/redmineinstall
-defaultRubyVersion='2.6'
-declare -A rubyVersions=(
-	[3.4]='2.4'
-)
+rubyVersion='2.6'
 
 cd "$(dirname "$(readlink -f "$BASH_SOURCE")")"
-
-versions=( "$@" )
-if [ ${#versions[@]} -eq 0 ]; then
-	versions=( */ )
-fi
-versions=( "${versions[@]%/}" )
-
-relasesUrl='https://www.redmine.org/releases'
-versionsPage="$(wget -qO- "$relasesUrl")"
 
 passenger="$(wget -qO- 'https://rubygems.org/api/v1/gems/passenger.json' | sed -r 's/^.*"version":"([^"]+)".*$/\1/')"
 
 travisEnv=
-for version in "${versions[@]}"; do
-	fullVersion="$(echo $versionsPage | sed -r "s/.*($version\.[0-9]+)\.tar\.gz[^.].*/\1/" | sort -V | tail -1)"
-	md5="$(wget -qO- "$relasesUrl/redmine-$fullVersion.tar.gz.md5" | cut -d' ' -f1)"
 
-	rubyVersion="${rubyVersions[$version]:-$defaultRubyVersion}"
+echo "trunk (ruby $rubyVersion; passenger $passenger)"
 
-	echo "$version: $fullVersion (ruby $rubyVersion; passenger $passenger)"
+cp docker-entrypoint.sh "trunk/"
+sed -e 's/%%RUBY_VERSION%%/'"$rubyVersion"'/' \
+	Dockerfile-debian.template > "trunk/Dockerfile"
 
-	cp docker-entrypoint.sh "$version/"
-	sed -e 's/%%REDMINE_VERSION%%/'"$fullVersion"'/' \
-		-e 's/%%RUBY_VERSION%%/'"$rubyVersion"'/' \
-		-e 's/%%REDMINE_DOWNLOAD_MD5%%/'"$md5"'/' \
-		Dockerfile-debian.template > "$version/Dockerfile"
+mkdir -p "trunk/passenger"
+sed -e 's/%%PASSENGER_VERSION%%/'"$passenger"'/' \
+	Dockerfile-passenger.template > "trunk/passenger/Dockerfile"
 
-	mkdir -p "$version/passenger"
-	sed -e 's/%%REDMINE%%/redmine:'"$version"'/' \
-		-e 's/%%PASSENGER_VERSION%%/'"$passenger"'/' \
-		Dockerfile-passenger.template > "$version/passenger/Dockerfile"
+mkdir -p "trunk/alpine"
+cp docker-entrypoint.sh "trunk/alpine/"
+sed -i -e 's/gosu/su-exec/g' "trunk/alpine/docker-entrypoint.sh"
+sed -e 's/%%RUBY_VERSION%%/'"$rubyVersion"'/' \
+	Dockerfile-alpine.template > "trunk/alpine/Dockerfile"
 
-	mkdir -p "$version/alpine"
-	cp docker-entrypoint.sh "$version/alpine/"
-	sed -i -e 's/gosu/su-exec/g' "$version/alpine/docker-entrypoint.sh"
-	sed -e 's/%%REDMINE_VERSION%%/'"$fullVersion"'/' \
-		-e 's/%%RUBY_VERSION%%/'"$rubyVersion"'/' \
-		-e 's/%%REDMINE_DOWNLOAD_MD5%%/'"$md5"'/' \
-		Dockerfile-alpine.template > "$version/alpine/Dockerfile"
-
-	travisEnv='\n  - VERSION='"$version/alpine$travisEnv"
-	travisEnv='\n  - VERSION='"$version$travisEnv"
-done
+travisEnv='\n  - VERSION='"trunk/alpine$travisEnv"
+travisEnv='\n  - VERSION='"trunk$travisEnv"
 
 travis="$(awk -v 'RS=\n\n' '$1 == "env:" { $0 = "env:'"$travisEnv"'" } { printf "%s%s", $0, RS }' .travis.yml)"
 echo "$travis" > .travis.yml
