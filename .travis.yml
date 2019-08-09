@@ -2,10 +2,8 @@ language: bash
 services: docker
 
 env:
-  - VERSION=4.0
-  - VERSION=4.0/alpine
-  - VERSION=3.4
-  - VERSION=3.4/alpine
+  - VERSION=trunk
+  - VERSION=trunk/alpine
 
 install:
   - git clone https://github.com/docker-library/official-images.git ~/official-images
