@@ -1,4 +1,4 @@
-FROM redmine-trunk
+FROM vzvu3k6k/redmine:trunk
 
 ENV PASSENGER_VERSION 6.0.2
 

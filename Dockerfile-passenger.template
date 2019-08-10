@@ -1,4 +1,4 @@
-FROM %%REDMINE%%
+FROM vzvu3k6k/redmine:trunk
 
 ENV PASSENGER_VERSION %%PASSENGER_VERSION%%
 
