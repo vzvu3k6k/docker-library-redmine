@@ -1,6 +1,6 @@
 FROM vzvu3k6k/redmine:trunk
 
-ENV PASSENGER_VERSION %%PASSENGER_VERSION%%
+ENV PASSENGER_VERSION 6.0.2
 
 RUN set -eux; \
 	\

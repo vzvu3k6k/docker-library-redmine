@@ -2,10 +2,8 @@ language: bash
 services: docker
 
 env:
-  - VERSION=4.0
-  - VERSION=4.0/alpine
-  - VERSION=3.4
-  - VERSION=3.4/alpine
+  - VERSION=trunk
+  - VERSION=trunk/alpine
 
 install:
   - git clone https://github.com/docker-library/official-images.git ~/official-images
@@ -14,7 +12,7 @@ before_script:
   - env | sort
   - wget -qO- 'https://github.com/tianon/pgp-happy-eyeballs/raw/master/hack-my-builds.sh' | bash
   - cd "$VERSION"
-  - image="redmine:${VERSION//\//-}"
+  - image="vzvu3k6k/redmine:${VERSION//\//-}"
 
 script:
   - |

@@ -1,4 +1,4 @@
-FROM ruby:%%RUBY_VERSION%%-slim-buster
+FROM ruby:2.6-slim-buster
 
 # explicitly set uid/gid to guarantee that it won't change in the future
 # the values 999:999 are identical to the current user/group id assigned
