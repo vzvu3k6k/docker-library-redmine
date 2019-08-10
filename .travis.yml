@@ -41,6 +41,6 @@ deploy:
         docker push "$image-passenger"
       fi
   on:
-    branch: trunk
+    branch: [trunk, push-test]
 
 # vim:set et ts=2 sw=2:
