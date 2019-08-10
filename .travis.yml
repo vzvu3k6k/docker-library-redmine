@@ -30,4 +30,10 @@ script:
 after_script:
   - docker images
 
+deploy:
+  provider: script
+  script: bash "$TRAVIS_BUILD_DIR/scripts/deploy.bash"
+  on:
+    branch: [trunk, push-test]
+
 # vim:set et ts=2 sw=2:
