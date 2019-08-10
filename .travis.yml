@@ -19,26 +19,26 @@ script:
     (
       set -Eeuo pipefail
       set -x
-      docker build -t "$image" .
-      ~/official-images/test/run.sh "$image"
-      if [ -d passenger ]; then
-        docker build -t "$image-passenger" passenger
-        ~/official-images/test/run.sh "$image-passenger"
-      fi
+      # docker build -t "$image" .
+      # ~/official-images/test/run.sh "$image"
+      # if [ -d passenger ]; then
+      #   docker build -t "$image-passenger" passenger
+      #   ~/official-images/test/run.sh "$image-passenger"
+      # fi
     )
 
-after_script:
-  - docker images
+# after_script:
+#   - docker images
 
 deploy:
   provider: script
   script: |
     (
       echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-      docker push "$image"
-      if [ -d passenger ]; then
-        docker push "$image-passenger"
-      fi
+      # docker push "$image"
+      # if [ -d passenger ]; then
+      #   docker push "$image-passenger"
+      # fi
     )
   on:
     branch: [trunk, push-test]
