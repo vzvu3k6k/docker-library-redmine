@@ -32,7 +32,7 @@ script:
 
 deploy:
   provider: script
-  script: bash scripts/deploy.bash
+  script: bash "$TRAVIS_BUILD_DIR/scripts/deploy.bash"
   on:
     branch: [trunk, push-test]
 
