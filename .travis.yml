@@ -19,16 +19,16 @@ script:
     (
       set -Eeuo pipefail
       set -x
-      # docker build -t "$image" .
-      # ~/official-images/test/run.sh "$image"
-      # if [ -d passenger ]; then
-      #   docker build -t "$image-passenger" passenger
-      #   ~/official-images/test/run.sh "$image-passenger"
-      # fi
+      docker build -t "$image" .
+      ~/official-images/test/run.sh "$image"
+      if [ -d passenger ]; then
+        docker build -t "$image-passenger" passenger
+        ~/official-images/test/run.sh "$image-passenger"
+      fi
     )
 
-# after_script:
-#   - docker images
+after_script:
+  - docker images
 
 deploy:
   provider: script
