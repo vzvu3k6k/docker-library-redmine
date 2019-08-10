@@ -78,11 +78,14 @@ RUN set -eux; \
 	chmod 1777 "$HOME"
 
 # https://github.com/agileware-jp/redmine-plugin-orb/pull/8
+# https://github.com/agileware-jp/redmine-plugin-orb/pull/13
 RUN set -eux; \
 	wget https://www.gandi.net/static/CAs/GandiStandardSSLCA2.pem -O /tmp/svn.pem; \
+	sed -ie 's/MinProtocol = TLSv1.2/MinProtocol = TLSv1.0/' /usr/lib/ssl/openssl.cnf; \
 	svn co --non-interactive \
 	--config-option servers:global:ssl-authority-files=/tmp/svn.pem \
 	https://svn.redmine.org/redmine/trunk .; \
+	sed -ie 's/MinProtocol = TLSv1.0/MinProtocol = TLSv1.2/' /usr/lib/ssl/openssl.cnf; \
 	rm /tmp/svn.pem; \
 	rm files/delete.me log/delete.me; \
 	mkdir -p log public/plugin_assets sqlite tmp/pdf tmp/pids; \
