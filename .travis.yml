@@ -12,17 +12,17 @@ before_script:
   - env | sort
   - wget -qO- 'https://github.com/tianon/pgp-happy-eyeballs/raw/master/hack-my-builds.sh' | bash
   - cd "$VERSION"
-  - image="vzvu3k6k/redmine:${VERSION//\//-}"
-
+  - source "$TRAVIS_BUILD_DIR/scripts/set_image_env.bash"
+ 
 script:
   - |
     (
       set -Eeuo pipefail
       set -x
-      docker build -t "$image" .
+      docker build -t "$image" --build-arg revision .
       ~/official-images/test/run.sh "$image"
       if [ -d passenger ]; then
-        docker build -t "$image-passenger" passenger
+        docker build -t "$image-passenger" --build-arg revision passenger
         ~/official-images/test/run.sh "$image-passenger"
       fi
     )
