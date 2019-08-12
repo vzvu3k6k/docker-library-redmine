@@ -34,6 +34,6 @@ deploy:
   provider: script
   script: bash "$TRAVIS_BUILD_DIR/scripts/deploy.bash"
   on:
-    branch: [trunk, push-test]
+    branch: [trunk, deploy]
 
 # vim:set et ts=2 sw=2:
