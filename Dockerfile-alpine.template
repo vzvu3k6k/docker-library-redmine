@@ -38,11 +38,14 @@ RUN set -eux; \
 	chown redmine:redmine "$HOME"; \
 	chmod 1777 "$HOME"
 
+ENV revision head
+
 # https://github.com/agileware-jp/redmine-plugin-orb/pull/8
 RUN set -eux; \
 	wget https://www.gandi.net/static/CAs/GandiStandardSSLCA2.pem -O /tmp/svn.pem; \
 	svn co --non-interactive \
 	--config-option servers:global:ssl-authority-files=/tmp/svn.pem \
+	-r $revision \
 	https://svn.redmine.org/redmine/trunk .; \
 	rm /tmp/svn.pem; \
 	rm files/delete.me log/delete.me; \

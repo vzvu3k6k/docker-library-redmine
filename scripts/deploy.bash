@@ -2,7 +2,7 @@
 
 set -Eeuo pipefail
 
-image="vzvu3k6k/redmine:${VERSION//\//-}"
+source "${BASH_SOURCE%/*}/set_envs.bash"
 
 echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
 

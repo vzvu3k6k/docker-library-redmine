@@ -77,6 +77,8 @@ RUN set -eux; \
 	chown redmine:redmine "$HOME"; \
 	chmod 1777 "$HOME"
 
+ENV revision head
+
 # https://github.com/agileware-jp/redmine-plugin-orb/pull/8
 # https://github.com/agileware-jp/redmine-plugin-orb/pull/13
 RUN set -eux; \
@@ -84,6 +86,7 @@ RUN set -eux; \
 	sed -ie 's/MinProtocol = TLSv1.2/MinProtocol = TLSv1.0/' /usr/lib/ssl/openssl.cnf; \
 	svn co --non-interactive \
 	--config-option servers:global:ssl-authority-files=/tmp/svn.pem \
+	-r $revision \
 	https://svn.redmine.org/redmine/trunk .; \
 	sed -ie 's/MinProtocol = TLSv1.0/MinProtocol = TLSv1.2/' /usr/lib/ssl/openssl.cnf; \
 	rm /tmp/svn.pem; \
