@@ -2,7 +2,7 @@
 
 set -Eeuo pipefail
 
-source "${BASH_SOURCE%/*}/set_image_env.bash"
+source "${BASH_SOURCE%/*}/set_envs.bash"
 
 echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
 
