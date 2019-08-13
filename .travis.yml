@@ -40,6 +40,7 @@ after_script:
 deploy:
   provider: script
   script: bash "$TRAVIS_BUILD_DIR/scripts/deploy.bash"
+  skip_cleanup: true
   on:
     branch: [master, deploy-test]
 
