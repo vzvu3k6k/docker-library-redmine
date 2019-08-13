@@ -5,7 +5,13 @@ SAVED_OPTIONS=$(set +o)
 set -Eeuo pipefail
 set -x
 
-export revision=$(svn info http://svn.redmine.org/redmine/trunk | grep -o -P "^Revision: \K(\d+)$")
+if [ -f .revision ]; then
+  revision="$(cat .revision)"
+else
+  revision="$(svn info http://svn.redmine.org/redmine/trunk | grep -o -P "^Revision: \K(\d+)$")"
+  echo "$revision" > .revision
+fi
+export revision
 
 export image_name="$DOCKER_USERNAME/redmine"
 
