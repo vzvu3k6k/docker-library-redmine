@@ -7,11 +7,15 @@ set -x
 
 export revision=$(svn info http://svn.redmine.org/redmine/trunk | grep -o -P "^Revision: \K(\d+)$")
 
-image="$DOCKER_USERNAME/redmine:${VERSION//\//-}"
-image="${image/trunk/r$revision}"
+export image_name="$DOCKER_USERNAME/redmine"
+
+tag="${VERSION//\//-}"
 if [ $TRAVIS_BRANCH = "deploy-test" ]; then
-  image="${image}-deploy-test"
+  tag="deploy-test-${tag}"
 fi
-export image
+revision_tag="${tag/trunk/r$revision}"
+
+export trunk_image="${image_name}:${tag}"
+export revision_image="${image_name}:${revision_tag}"
 
 eval "$SAVED_OPTIONS"
