@@ -22,7 +22,10 @@ script:
       docker build -t "$image" --build-arg revision .
       ~/official-images/test/run.sh "$image"
       if [ -d passenger ]; then
-        docker build -t "$image-passenger" --build-arg revision passenger
+        docker build -t "$image-passenger" \
+          --build-arg revision \
+          --build-arg BASE_IMAGE="$image" \
+          passenger
         ~/official-images/test/run.sh "$image-passenger"
       fi
     )
