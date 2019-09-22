@@ -20,13 +20,12 @@ script:
       set -Eeuo pipefail
       set -x
 
-      docker build -t "$trunk_image" --build-arg revision .
+      docker build -t "$trunk_image" .
       ~/official-images/test/run.sh "$trunk_image"
       docker tag "$trunk_image" "$revision_image"
 
       if [ -d passenger ]; then
         docker build -t "${trunk_image}-passenger" \
-          --build-arg revision \
           --build-arg BASE_IMAGE="${trunk_image}" \
           passenger
         ~/official-images/test/run.sh "${trunk_image}-passenger"
