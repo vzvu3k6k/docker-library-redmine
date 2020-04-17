@@ -12,19 +12,27 @@ travisEnv=
 
 echo "trunk (ruby $rubyVersion; passenger $passenger)"
 
+commonSedArgs+=(
+	-r
+	-e 's/%%RUBY_VERSION%%/'"$rubyVersion"'/'
+	-e 's/%%PASSENGER_VERSION%%/'"$passenger"'/'
+	-e '/imagemagick-dev/d'
+	-e '/libmagickcore-dev/d'
+	-e '/libmagickwand-dev/d'
+)
+
+alpineSedArgs=()
+
 cp docker-entrypoint.sh "trunk/"
-sed -e 's/%%RUBY_VERSION%%/'"$rubyVersion"'/' \
-	Dockerfile-debian.template > "trunk/Dockerfile"
+sed "${commonSedArgs[@]}" Dockerfile-debian.template > "trunk/Dockerfile"
 
 mkdir -p "trunk/passenger"
-sed -e 's/%%PASSENGER_VERSION%%/'"$passenger"'/' \
-	Dockerfile-passenger.template > "trunk/passenger/Dockerfile"
+sed "${commonSedArgs[@]}" Dockerfile-passenger.template > "trunk/passenger/Dockerfile"
 
 mkdir -p "trunk/alpine"
 cp docker-entrypoint.sh "trunk/alpine/"
 sed -i -e 's/gosu/su-exec/g' "trunk/alpine/docker-entrypoint.sh"
-sed -e 's/%%RUBY_VERSION%%/'"$rubyVersion"'/' \
-	Dockerfile-alpine.template > "trunk/alpine/Dockerfile"
+sed "${commonSedArgs[@]}" "${alpineSedArgs[@]}" Dockerfile-alpine.template > "trunk/alpine/Dockerfile"
 
 travisEnv='\n  - VERSION='"trunk/alpine$travisEnv"
 travisEnv='\n  - VERSION='"trunk$travisEnv"

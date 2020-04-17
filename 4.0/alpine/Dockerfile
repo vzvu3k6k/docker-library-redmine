@@ -1,4 +1,4 @@
-FROM ruby:2.6-alpine3.10
+FROM ruby:2.6-alpine3.11
 
 # explicitly set uid/gid to guarantee that it won't change in the future
 # the values 999:999 are identical to the current user/group id assigned
@@ -20,8 +20,8 @@ RUN set -eux; \
 		openssh-client \
 		subversion \
 		\
-# https://github.com/docker-library/redmine/issues/132
-# (without "ghostscript-fonts" we get "Magick::ImageMagickError (non-conforming drawing primitive definition `text' @ error/draw.c/DrawImage/3265):")
+# we need "gsfonts" for generating PNGs of Gantt charts
+# and "ghostscript" for creating PDF thumbnails (in 4.1+)
 		ghostscript-fonts \
 		imagemagick6 \
 	;
@@ -38,8 +38,8 @@ RUN set -eux; \
 	chown redmine:redmine "$HOME"; \
 	chmod 1777 "$HOME"
 
-ENV REDMINE_VERSION 4.0.6
-ENV REDMINE_DOWNLOAD_MD5 897bfcaa4a49539b10d0529ce103f919
+ENV REDMINE_VERSION 4.0.7
+ENV REDMINE_DOWNLOAD_MD5 baad690fdccd7f0282d53beb0ee2c47b
 
 RUN set -eux; \
 	wget -O redmine.tar.gz "https://www.redmine.org/releases/redmine-${REDMINE_VERSION}.tar.gz"; \
@@ -60,7 +60,6 @@ RUN set -eux; \
 		coreutils \
 		freetds-dev \
 		gcc \
-		imagemagick6-dev \
 		make \
 		mariadb-dev \
 		musl-dev \
@@ -69,6 +68,8 @@ RUN set -eux; \
 		sqlite-dev \
 		ttf2ufm \
 		zlib-dev \
+# in 4.1+, imagemagick6-dev is no longer necessary/used: https://www.redmine.org/issues/30492
+		imagemagick6-dev \
 	; \
 	\
 	su-exec redmine bundle install --jobs "$(nproc)" --without development test; \

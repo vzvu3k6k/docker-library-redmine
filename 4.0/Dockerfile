@@ -16,8 +16,8 @@ RUN set -eux; \
 		openssh-client \
 		subversion \
 		\
-# https://github.com/docker-library/redmine/issues/132
-# (without "gsfonts" we get "Magick::ImageMagickError (non-conforming drawing primitive definition `text' @ error/draw.c/DrawImage/3265):")
+# we need "gsfonts" for generating PNGs of Gantt charts
+# and "ghostscript" for creating PDF thumbnails (in 4.1+)
 		gsfonts \
 		imagemagick \
 	; \
@@ -36,7 +36,7 @@ RUN set -eux; \
 	\
 # grab gosu for easy step-down from root
 # https://github.com/tianon/gosu/releases
-	export GOSU_VERSION='1.11'; \
+	export GOSU_VERSION='1.12'; \
 	wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$dpkgArch"; \
 	wget -O /usr/local/bin/gosu.asc "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$dpkgArch.asc"; \
 	export GNUPGHOME="$(mktemp -d)"; \
@@ -77,8 +77,8 @@ RUN set -eux; \
 	chown redmine:redmine "$HOME"; \
 	chmod 1777 "$HOME"
 
-ENV REDMINE_VERSION 4.0.6
-ENV REDMINE_DOWNLOAD_MD5 897bfcaa4a49539b10d0529ce103f919
+ENV REDMINE_VERSION 4.0.7
+ENV REDMINE_DOWNLOAD_MD5 baad690fdccd7f0282d53beb0ee2c47b
 
 RUN set -eux; \
 	wget -O redmine.tar.gz "https://www.redmine.org/releases/redmine-${REDMINE_VERSION}.tar.gz"; \
@@ -100,13 +100,13 @@ RUN set -eux; \
 	apt-get install -y --no-install-recommends \
 		freetds-dev \
 		gcc \
-		libmagickcore-dev \
-		libmagickwand-dev \
 		libmariadbclient-dev \
 		libpq-dev \
 		libsqlite3-dev \
 		make \
 		patch \
+# in 4.1+, libmagickcore-dev and libmagickwand-dev are no longer necessary/used: https://www.redmine.org/issues/30492
+		libmagickcore-dev libmagickwand-dev \
 	; \
 	rm -rf /var/lib/apt/lists/*; \
 	\
