@@ -1,4 +1,4 @@
-FROM ruby:2.6-alpine3.10
+FROM ruby:2.6-alpine3.11
 
 # explicitly set uid/gid to guarantee that it won't change in the future
 # the values 999:999 are identical to the current user/group id assigned
@@ -20,10 +20,11 @@ RUN set -eux; \
 		openssh-client \
 		subversion \
 		\
-# https://github.com/docker-library/redmine/issues/132
-# (without "ghostscript-fonts" we get "Magick::ImageMagickError (non-conforming drawing primitive definition `text' @ error/draw.c/DrawImage/3265):")
+# we need "gsfonts" for generating PNGs of Gantt charts
+# and "ghostscript" for creating PDF thumbnails (in 4.1+)
+		ghostscript \
 		ghostscript-fonts \
-		imagemagick6 \
+		imagemagick \
 	;
 
 ENV RAILS_ENV production
@@ -63,7 +64,6 @@ RUN set -eux; \
 		coreutils \
 		freetds-dev \
 		gcc \
-		imagemagick6-dev \
 		make \
 		mariadb-dev \
 		musl-dev \
