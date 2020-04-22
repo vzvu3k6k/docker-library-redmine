@@ -5,7 +5,7 @@ set -Eeuo pipefail
 source "${BASH_SOURCE%/*}/set_envs.bash"
 
 # Remove old tags
-TOKEN=$(curl -sS -H "Content-Type: application/json" -X POST -d '{"username": "'${DOCKER_USRNAME}'", "password": "'${DOCKER_PASSWORD}'"}' https://hub.docker.com/v2/users/login/ | jq -r .token)
+TOKEN=$(curl -sS -H "Content-Type: application/json" -X POST -d '{"username": "'${DOCKER_USERNAME}'", "password": "'${DOCKER_PASSWORD}'"}' https://hub.docker.com/v2/users/login/ | jq -r .token)
 AUTH="Authorization: JWT ${TOKEN}"
 
 IMAGE_TAGS=$(curl -s -H "$AUTH" 'https://hub.docker.com/v2/repositories/vzvu3k6k/redmine/tags?page_size=100&n=2&ordering=-last_updated' | jq -r '.results|.[]|.name')
